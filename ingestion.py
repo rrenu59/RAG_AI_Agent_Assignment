@@ -19,7 +19,7 @@ WHAT TO MODIFY (for students):
 
 import os
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
@@ -130,7 +130,7 @@ def split_documents(documents: list) -> list:
     # STRATEGY 2: CharacterTextSplitter (simpler, less smart)
     # Uncomment below and comment out Strategy 1 to try it:
     #
-    # from langchain.text_splitter import CharacterTextSplitter
+    # from langchain_text_splitters import CharacterTextSplitter
     # text_splitter = CharacterTextSplitter(
     #     chunk_size=CHUNK_SIZE,
     #     chunk_overlap=CHUNK_OVERLAP,
@@ -141,7 +141,7 @@ def split_documents(documents: list) -> list:
     # Better for LLMs since they process tokens, not characters.
     # Uncomment below to try it:
     #
-    # from langchain.text_splitter import TokenTextSplitter
+    # from langchain_text_splitters import TokenTextSplitter
     # text_splitter = TokenTextSplitter(
     #     chunk_size=200,       # 200 tokens per chunk
     #     chunk_overlap=50,     # 50 token overlap
