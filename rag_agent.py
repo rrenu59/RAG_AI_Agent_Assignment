@@ -35,7 +35,7 @@ from ingestion import CHROMA_DB_DIR, EMBEDDING_MODEL
 # How many chunks to retrieve per query
 # - More chunks (5-8) = broader context, may include less relevant info
 # - Fewer chunks (2-3) = more focused, but may miss relevant info
-TOP_K = 4
+TOP_K = 5
 
 # --------------------------------------------------------------------------
 # LLM SETTINGS - Students: experiment with these!
@@ -66,7 +66,7 @@ TEMPERATURE = 0
 #   - "Answer in bullet points only."
 #   - "If you're not sure, list what you DO know and what's missing."
 #
-SYSTEM_PROMPT = """You are a helpful assistant. Answer the user's question based ONLY \
+SYSTEM_PROMPT = """You are a helpful HR assistant. Answer the user's question based ONLY \
 on the following context from retrieved documents.
 
 RULES:
@@ -74,6 +74,10 @@ RULES:
 2. If the context does not contain enough information, say so honestly.
 3. At the end of your answer, add a "Sources:" section listing which \
 documents and pages you used.
+4. Always answer formally and professionally
+5. Always references the specific policy section
+6. Adds "Action Items:" listing what the employee should do next
+
 
 Context:
 {context}
@@ -122,7 +126,7 @@ def retrieve(state: RAGState) -> dict:
 
     # METHOD 1: Basic similarity search (DEFAULT)
     # Returns the TOP_K chunks most similar to the question
-    results = vector_store.similarity_search(question, k=TOP_K)
+    # results = vector_store.similarity_search(question, k=TOP_K)
 
     # METHOD 2: Similarity search with relevance scores
     # Returns chunks along with their similarity scores (0 to 1)
@@ -140,9 +144,9 @@ def retrieve(state: RAGState) -> dict:
     # Balances relevance with diversity - avoids returning similar chunks
     # Uncomment below to try it:
     #
-    # results = vector_store.max_marginal_relevance_search(
-    #     question, k=TOP_K, fetch_k=TOP_K * 3
-    # )
+    results = vector_store.max_marginal_relevance_search(
+        question, k=TOP_K, fetch_k=TOP_K * 3
+    )
 
     # --------------------------------------------------------------------------
 

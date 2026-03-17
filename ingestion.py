@@ -40,7 +40,7 @@ CHROMA_DB_DIR = "chroma_db"
 # CHUNK_SIZE: How many characters per chunk.
 #   - Smaller (300-500)  = more precise retrieval, but may lose context
 #   - Larger  (1000-2000) = more context per chunk, but less precise matching
-CHUNK_SIZE = 1000
+CHUNK_SIZE = 800
 
 # CHUNK_OVERLAP: How many characters overlap between consecutive chunks.
 #   - More overlap (200-500) = better continuity, chunks share more context
@@ -95,6 +95,7 @@ def load_pdfs(data_dir: str) -> list:
         loader = PyPDFLoader(pdf_path)
         documents.extend(loader.load())
 
+
     print(f"  Loaded {len(documents)} pages from {len(pdf_files)} PDF(s).")
     return documents
 
@@ -121,10 +122,10 @@ def split_documents(documents: list) -> list:
     # Splits by paragraphs -> sentences -> words, keeping structure intact.
     # This is the most commonly used splitter and a great starting point.
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        length_function=len,
-        separators=["\n\n", "\n", ". ", " ", ""],  # Split priority order
+       chunk_size=CHUNK_SIZE,
+      chunk_overlap=CHUNK_OVERLAP,
+       length_function=len,
+      separators=["\n\n", "\n", ". ", " ", ""],  # Split priority order
     )
 
     # STRATEGY 2: CharacterTextSplitter (simpler, less smart)
@@ -151,6 +152,8 @@ def split_documents(documents: list) -> list:
 
     chunks = text_splitter.split_documents(documents)
     print(f"  Split into {len(chunks)} chunks (size={CHUNK_SIZE}, overlap={CHUNK_OVERLAP}).")
+    # for chunk in chunks:
+    #     print(f"Chunk : {chunk} \n\n")
     return chunks
 
 
