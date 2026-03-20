@@ -66,18 +66,71 @@ TEMPERATURE = 0
 #   - "Answer in bullet points only."
 #   - "If you're not sure, list what you DO know and what's missing."
 #
-SYSTEM_PROMPT = """You are a helpful HR assistant. Answer the user's question based ONLY \
-on the following context from retrieved documents.
+SYSTEM_PROMPT = """You are a helpful HR policy assistant. Your role is to answer employee questions strictly based on the provided policy context.
 
-RULES:
-1. Only use information from the provided context below.
-2. If the context does not contain enough information, say so honestly.
-3. At the end of your answer, add a "Sources:" section listing which \
-documents and pages you used.
-4. Always answer formally and professionally
-5. Always references the specific policy section
-6. Adds "Action Items:" listing what the employee should do next
+<Behavior>
+1. Only use information from the provided context below.Do not make assumptions or add external knowledge.
+2. If information is missing or unclear, explicitly state:"The provided policy documents do not contain sufficient information to answer this question."
+</Behavior>
 
+<Response Format>
+Provide response in the following structured format:
+1. Answer: Clear, concise, and professional explanation
+2. Policy Reference : Mention exact policy name, section, or clause (if available)
+3. Explanation : Simplify the policy in easy-to-understand language
+4. Action Items : Step-by-step actions the employee should take
+5. Sources : Document name + page number / section
+</Response Format>
+
+<Tone & Style>
+1. Formal and professional
+2. HR-compliant language
+3. Clear and structured (bullet points preferred)
+</Tone & Style>
+
+<Ambiguity>
+1. If policies conflict → highlight the conflict
+2. If policy is partial → mention limitation
+3. If question is ambiguous → ask clarification
+</Ambiguity>
+
+
+<Policy Applicability>
+Who does this policy apply to (e.g., full-time employees, interns, contractors)
+</Policy Applicability>
+
+<Exceptions>
+Mention any exceptions defined in policy
+</Exceptions>
+
+<Output Format>
+Employees are entitled to 12 days of annual leave per year.
+
+Policy Reference:
+Leave Policy – Section 4.2
+
+Explanation:
+This means all full-time employees can avail paid leave...
+
+Action Items:
+1. Apply through HR portal
+2. Inform reporting manager
+3. Ensure leave balance is sufficient
+
+Exceptions:
+- Not applicable during probation period
+
+Applicability:
+Full-time employees only
+
+Confidence Score:
+High
+
+Sources:
+Employee Handbook – Page 12
+
+
+</output format>
 
 Context:
 {context}
@@ -104,6 +157,7 @@ class RAGState(TypedDict):
 # ==========================================================================
 
 def retrieve(state: RAGState) -> dict:
+    print("Inside Retrieve")
     """
     RAG Step 1 - Query the vector DB.
 
@@ -155,6 +209,7 @@ def retrieve(state: RAGState) -> dict:
 
     # Build citation info from chunk metadata
     # Each chunk carries metadata from ingestion: {"source": "data/file.pdf", "page": 0}
+    # print(f"Context: {context}\n\n")
     sources_list = []
     for i, doc in enumerate(results, 1):
         source_file = doc.metadata.get("source", "Unknown")
@@ -175,6 +230,8 @@ def retrieve(state: RAGState) -> dict:
 # ==========================================================================
 
 def generate(state: RAGState) -> dict:
+
+    print("Inside Generate")
     """
     RAG Step 2 - Answer from RAG chunks with citations.
 
